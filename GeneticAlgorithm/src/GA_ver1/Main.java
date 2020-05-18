@@ -20,7 +20,6 @@ public class Main {
 	static Chromosome chMix[] = new Chromosome[populationLength*3/2];
 	static Chromosome parentA;
 	static Chromosome parentB;
-	static Chromosome child;
 	
 	//cycle에서 location 가져오기
 	static void locationInput() {
@@ -117,7 +116,40 @@ public class Main {
 		}
 	}
 	
-	static void crossOver(Chromosome a, Chromosome b) {
+	//부모 Chromosome 두 개를 랜덤으로 받아 crossOver
+	static Chromosome crossOver(Chromosome a, Chromosome b) {
+		Chromosome c;
+		int[] temp = {-1, -1, -1, -1, -1, -1,- 1, -1, -1, -1, -1};
+		double sumTemp = 0;
+		int cutPoint = (int)(Math.random()*locationCount);
+		for(int i = 0; i < cutPoint; i++) {
+			temp[i] = a.geneSource[i];
+		}
+		for(int i = 0; i < locationCount; i++) {
+			boolean tf = false;
+			for(int j = 0; j < locationCount; j++) {
+				if(b.geneSource[i] == temp[j]) {
+					tf = true;
+				}
+			}
+			if(cutPoint == 11) {
+				break;
+			}
+			if(tf == false) {
+				temp[cutPoint] = b.geneSource[i];
+				cutPoint++;
+			}
+		}
+	
+		for(int i = 0; i < locationCount; i++) {
+			if(i == locationCount-1) {
+				sumTemp += gene[temp[i]][temp[0]];
+			}else {
+				sumTemp += gene[temp[i]][temp[i+1]];
+			}
+		}
+		c = new Chromosome(sumTemp, temp);
+		return c;
 		
 	}
 	
@@ -129,13 +161,23 @@ public class Main {
 			double sumTemp = 0;
 			int sp = (int)(Math.random()*locationCount);
 			int ep = (int)(Math.random()*locationCount);
+			int sum = (ep+sp);
 			if(sp > ep) {
 				int tmp = sp;
 				sp = ep;
 				ep = tmp;
 			}
-			for(int i = 0; i < locationCount; i++) {
-				//mutate 알고리즘 구현
+			for(int i = sp; i <= sum/2; i++) {
+				int tmp = temp[i];
+				temp[i] = temp[sum-i];
+				temp[sum-i] = tmp;
+			}
+			for(int i = 0; i <locationCount; i++) {
+				if(i == locationCount-1) {
+					sumTemp += gene[temp[i]][temp[0]];
+				}else {
+					sumTemp += gene[temp[i]][temp[i+1]];
+				}
 			}
 			x = new Chromosome(sumTemp, temp);
 			return x;
@@ -167,13 +209,21 @@ public class Main {
 		locationInput();
 		geneSet();
 		chromoSet();
-		/*int generation = 0;
+		int generation = 0;
 		while(generation < maxGeneration) {
 			sorting(ch);
-			print(ch);
+			for(int i = 0; i < populationLength; i++) {
+				chMix[i] = ch[i];
+			}
+			for(int i = 50; i < chMix.length; i++) {
+				select();
+				chMix[i] = mutate(crossOver(parentA, parentB));
+			}
+			sorting(chMix);
+			replace();
 			System.out.println(generation + 1 + "generation : " + ch[0].geneSum);
 			generation++;
-		}*/
+		}
 	}
 
 }
