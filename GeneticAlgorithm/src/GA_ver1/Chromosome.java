@@ -9,6 +9,6 @@ public class Chromosome {
 		this.geneSource = geneSource;
 	}
 	double geneSum;
-	int geneSource[] = new int[Setting.locationCount];
+	int geneSource[] = new int[Main.locationCount];
 	
 }
