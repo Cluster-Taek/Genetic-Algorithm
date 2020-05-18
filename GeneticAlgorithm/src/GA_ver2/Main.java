@@ -1,4 +1,4 @@
-package GA_ver1;
+package GA_ver2;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,12 +7,12 @@ import java.util.Arrays;
 
 public class Main {
 
-	static int locationCount = 11;
+	static int locationCount = 29;
 	static double maxTimer;
 	static int populationLength = 50;
 	static double selectionPressure = 0.7;
 	static double mutateProbability = 0.15;
-	static int maxGeneration = 500;
+	static int maxGeneration = 500000;
 	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
@@ -24,7 +24,7 @@ public class Main {
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/cycle11.in";
+			String filePath = "cycles/cycle29_2.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -40,7 +40,7 @@ public class Main {
 		}catch (IOException e) {
 			e.getStackTrace();
 		}
-		/*System.out.println("LocationCount : " + locationCount);
+		System.out.println("LocationCount : " + locationCount);
 		System.out.println("Location Point : ");
 		for(int i = 0; i < location.length; i++) {
 			for(int j = 0; j < 2; j++) {
@@ -48,7 +48,7 @@ public class Main {
 			}
 			System.out.println();
 		}
-		System.out.println("maxTimer : " + maxTimer);*/
+		System.out.println("maxTimer : " + maxTimer);
 	}
 	
 	//gene 초기화
