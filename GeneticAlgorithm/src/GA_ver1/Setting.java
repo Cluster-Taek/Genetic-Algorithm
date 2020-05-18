@@ -7,6 +7,8 @@ public class Setting {
 	
 	static int locationCount = 11;
 	static double maxTimer;
+	static int PopulationLength = 50;
+	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
 	
@@ -45,9 +47,7 @@ public class Setting {
 				double xlength = location[i][0] - location[j][0]; 
 				double ylength = location[i][1] - location[j][1]; 
 				gene[i][j] = Math.sqrt((xlength*xlength)+(ylength*ylength));
-				System.out.print(gene[i][j] + " ");
 			}
-			System.out.println();
 		}
 	}
 }
