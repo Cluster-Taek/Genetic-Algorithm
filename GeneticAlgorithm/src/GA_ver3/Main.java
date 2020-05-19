@@ -1,4 +1,4 @@
-package GA_ver2;
+package GA_ver3;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,28 +7,29 @@ import java.util.Arrays;
 
 public class Main {
 
-	static int locationCount = 100;
+	static int locationCount = 11;
+	
 	static double maxTimer;
 	static int populationLength = 50;
 	static double selectionPressure = 0.7;
 	static double mutateProbability = 0.15;
-	static int maxGeneration = 500000;
+	static int maxGeneration = 500;
 	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
 	static Chromosome ch[] = new Chromosome[populationLength];
 	static Chromosome chMix[] = new Chromosome[populationLength*3/2];
+
 	static Chromosome parentA;
 	static Chromosome parentB;
 	
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/opt_cycle100.in";
+			String filePath = "cycles/cycle11.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
-			
 			for(int i = 0; i < locationCount; i++) {
 				temp = br.readLine();
 				String tempArray[] = temp.split(" ");
@@ -62,13 +63,24 @@ public class Main {
 		}
 	}
 	
+	static Chromosome chromoSum(int temp[]) {
+		double sumTemp = 0;
+		for(int i = 0; i <locationCount; i++) {
+			if(i == locationCount-1) {
+				sumTemp += gene[temp[i]][temp[0]];
+			}else {
+				sumTemp += gene[temp[i]][temp[i+1]];
+			}
+		}
+		Chromosome c = new Chromosome(sumTemp, temp);
+		return c;
+	}
 	//chromosome 초기화
 	static void chromoSet() {
-		
 		for(int index = 0; index <populationLength; index++) {
 			//temp에 랜덤 chromosome 저장
 			int[] temp = new int[locationCount];
-			double sumTemp = 0;
+			
 			for(int i = 0; i < locationCount; i++) {
 				temp[i] = (int)(Math.random()*locationCount);
 				for(int j = 0; j < i; j++) {
@@ -78,15 +90,7 @@ public class Main {
 					}
 				}
 			}
-			//temp의 geneSum 저장
-			for(int j = 0; j <locationCount; j++) {
-				if(j == locationCount-1) {
-					sumTemp += gene[temp[j]][temp[0]];
-				}else {
-					sumTemp += gene[temp[j]][temp[j+1]];
-				}
-			}
-			ch[index] = new Chromosome(sumTemp, temp);
+			ch[index] = chromoSum(temp);
 		}
 	}
 	
@@ -118,12 +122,8 @@ public class Main {
 	
 	//부모 Chromosome 두 개를 랜덤으로 받아 crossOver
 	static Chromosome crossOver(Chromosome a, Chromosome b) {
-		Chromosome c;
 		int temp[] = new int[locationCount];
-		for(int i = 0; i < locationCount; i++) {
-			temp[i] = -1;
-		}
-		double sumTemp = 0;
+		Arrays.fill(temp, -1);
 		int cutPoint = (int)(Math.random()*locationCount);
 		for(int i = 0; i < cutPoint; i++) {
 			temp[i] = a.geneSource[i];
@@ -143,25 +143,15 @@ public class Main {
 				cutPoint++;
 			}
 		}
-	
-		for(int i = 0; i < locationCount; i++) {
-			if(i == locationCount-1) {
-				sumTemp += gene[temp[i]][temp[0]];
-			}else {
-				sumTemp += gene[temp[i]][temp[i+1]];
-			}
-		}
-		c = new Chromosome(sumTemp, temp);
+		Chromosome c = chromoSum(temp);
 		return c;
 		
 	}
 	
 	//c를 받아 mutateProbability에 따라 원래 값 혹은 돌연변이 값으로 반환
 	static Chromosome mutate(Chromosome c) {
-		Chromosome x;
 		if(Math.random() < mutateProbability) {
 			int[] temp = c.geneSource;
-			double sumTemp = 0;
 			int sp = (int)(Math.random()*locationCount);
 			int ep = (int)(Math.random()*locationCount);
 			int sum = (ep+sp);
@@ -175,14 +165,7 @@ public class Main {
 				temp[i] = temp[sum-i];
 				temp[sum-i] = tmp;
 			}
-			for(int i = 0; i <locationCount; i++) {
-				if(i == locationCount-1) {
-					sumTemp += gene[temp[i]][temp[0]];
-				}else {
-					sumTemp += gene[temp[i]][temp[i+1]];
-				}
-			}
-			x = new Chromosome(sumTemp, temp);
+			Chromosome x = chromoSum(temp);
 			return x;
 		}else {
 			return c;

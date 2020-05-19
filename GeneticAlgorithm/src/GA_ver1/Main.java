@@ -103,7 +103,7 @@ public class Main {
 			}
 		}
 	}
-	
+	//select를 통해 부모 Chromosome 추출
 	static void select() {
 		if(Math.random() < selectionPressure) {
 			parentA = ch[(int)(Math.random()*populationLength/2)];
