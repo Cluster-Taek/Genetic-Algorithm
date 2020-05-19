@@ -20,7 +20,8 @@ public class Main {
 	static Chromosome chMix[] = new Chromosome[populationLength*3/2];
 	static Chromosome parentA;
 	static Chromosome parentB;
-	
+
+	static Chromosome G;
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
@@ -206,6 +207,15 @@ public class Main {
 		}
 	}
 	
+	static void printGene() {
+		for(int i = 0; i < locationCount; i++) {
+			for(int j = 0; j < locationCount; j++) {
+				System.out.print(gene[i][j] + "\t");
+			}
+			System.out.println();
+		}
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
@@ -225,6 +235,7 @@ public class Main {
 			sorting(chMix);
 			replace();
 			System.out.println(generation + 1 + "generation : " + ch[0].geneSum);
+			System.out.println(Arrays.toString(ch[0].geneSource));
 			generation++;
 		}
 	}

@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class Main {
 
-	static int locationCount = 29;
+	static int locationCount = 21;
 	static double maxTimer;
 	static int populationLength = 50;
 	static double selectionPressure = 0.7;
@@ -24,7 +24,7 @@ public class Main {
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/cycle29_2.in";
+			String filePath = "cycles/cycle21.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -224,7 +224,9 @@ public class Main {
 			}
 			sorting(chMix);
 			replace();
-			System.out.println(generation + 1 + "generation : " + ch[0].geneSum);
+			if(generation%500 == 0) {
+				System.out.println(generation + 1 + "generation : " + ch[0].geneSum);
+			}
 			generation++;
 		}
 	}
