@@ -14,11 +14,13 @@ public class Main {
 	 */
 	
 	static double maxTimer;
+	static int generation;
 	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
 	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
 	static int maxGeneration = 500; //총 몇 세대를 출력을 할 것인가?
 	static int generationPrint = 20; //몇 세대마다 출력을 할 것인가?
+	
 	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
@@ -221,12 +223,12 @@ public class Main {
 		}
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	//최적해만을 받아주는 메소드 
+	static Chromosome solution() {
 		locationInput();
 		geneSet();
 		chromoSet();
-		int generation = 0;
+		generation = 0;
 		while(generation <= maxGeneration) {
 			sorting(ch);
 			for(int i = 0; i < populationLength; i++) {
@@ -238,11 +240,13 @@ public class Main {
 			}
 			sorting(chMix);
 			replace();
-			if(generation % generationPrint == 0) {
-				System.out.println(generation + "generation : " + ch[0].geneSum);
-			}
 			generation++;
 		}
+		return ch[0];
+	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println(generation + "generation : " + solution().geneSum);
 	}
 
 }
