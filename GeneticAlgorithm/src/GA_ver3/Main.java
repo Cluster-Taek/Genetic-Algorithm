@@ -7,7 +7,11 @@ import java.util.Arrays;
 
 public class Main {
 
-	static int locationCount = 11;
+	static int locationCount = 11; 
+	/*
+	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
+	 case 2 : 실행속도 증가를 위해 array를 사용하고 locationCount만 수동으로 초기화
+	 */
 	
 	static double maxTimer;
 	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
@@ -76,6 +80,7 @@ public class Main {
 		Chromosome c = new Chromosome(sumTemp, temp);
 		return c;
 	}
+	
 	//chromosome 초기화
 	static void chromoSet() {
 		for(int index = 0; index <populationLength; index++) {
@@ -150,7 +155,31 @@ public class Main {
 	}
 	
 	//c를 받아 mutateProbability에 따라 원래 값 혹은 돌연변이 값으로 반환
+	//
 	static Chromosome mutate(Chromosome c) {
+		if(Math.random() < mutateProbability) {
+			int[] temp = c.geneSource;
+			int sp = (int)(Math.random()*locationCount);
+			int ep = (int)(Math.random()*locationCount);
+			int sum = (ep+sp);
+			if(sp > ep) {
+				int tmp = sp;
+				sp = ep;
+				ep = tmp;
+			}
+			for(int i = sp; i <= sum/2; i++) {
+				int tmp = temp[i];
+				temp[i] = temp[sum-i];
+				temp[sum-i] = tmp;
+			}
+			Chromosome x = chromoSum(temp);
+			return x;
+		}else {
+			return c;
+		}
+	}
+	
+	static Chromosome mutate2(Chromosome c) {
 		if(Math.random() < mutateProbability) {
 			int[] temp = c.geneSource;
 			int sp = (int)(Math.random()*locationCount);
@@ -178,6 +207,8 @@ public class Main {
 			ch[i] = chMix[i];
 		}
 	}
+	
+	
 	
 	static void print(Chromosome[] c) {
 		for(int i = 0; i < c.length; i++) {
