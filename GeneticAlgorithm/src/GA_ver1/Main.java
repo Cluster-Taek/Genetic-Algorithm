@@ -235,7 +235,7 @@ public class Main {
 			sorting(chMix);
 			replace();
 			System.out.println(generation + 1 + "generation : " + ch[0].geneSum);
-			System.out.println(Arrays.toString(ch[0].geneSource));
+			//System.out.println(Arrays.toString(ch[0].geneSource));
 			generation++;
 		}
 	}

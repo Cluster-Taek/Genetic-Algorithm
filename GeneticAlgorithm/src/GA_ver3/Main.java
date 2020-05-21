@@ -10,10 +10,11 @@ public class Main {
 	static int locationCount = 11;
 	
 	static double maxTimer;
-	static int populationLength = 50;
-	static double selectionPressure = 0.7;
-	static double mutateProbability = 0.15;
-	static int maxGeneration = 500;
+	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
+	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
+	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
+	static int maxGeneration = 500; //총 몇 세대를 출력을 할 것인가?
+	static int generationPrint = 20; //몇 세대마다 출력을 할 것인가?
 	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
@@ -191,7 +192,6 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
 		locationInput();
 		geneSet();
 		chromoSet();
@@ -207,7 +207,7 @@ public class Main {
 			}
 			sorting(chMix);
 			replace();
-			if(generation%500 == 0) {
+			if(generation % generationPrint == 0) {
 				System.out.println(generation + "generation : " + ch[0].geneSum);
 			}
 			generation++;
