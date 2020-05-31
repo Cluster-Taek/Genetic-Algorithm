@@ -1,34 +1,39 @@
 package GA_source;
 
+class TestThread extends Thread{
+
+	private boolean stop;
+	
+	TestThread() {
+		this.stop = false;
+	}
+	
+	public void run() {
+		while(!stop) {
+			System.out.println("무한 실행");
+		}
+		System.out.println("실행 종료");
+	}
+	
+	public void threadStop(boolean stop) {
+		this.stop = stop;
+	}
+}
+
 public class TimeOut {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-	
-	}
-	
-	public static void test() {
-		StopThread stThread = new StopThread();
-		Thread thread = new Thread(stThread);
+		TestThread thread = new TestThread();
 		thread.start();
 		
+		try {
+			Thread.sleep(500);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		thread.threadStop(true);
 	}
 	
-
-}
-
-class StopThread implements Runnable {
-	public void run() {
-		try {
-			while(!Thread.currentThread().isInterrupted()) {
-				System.out.println("sleeping");
-				Thread.sleep(10000);
-				System.out.println("live!");
-			}
-		}catch (InterruptedException e) {
-			
-		}finally {
-			System.out.println("dead");
-		}
-	}
 }

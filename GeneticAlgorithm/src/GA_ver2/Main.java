@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class Main {
+class Source extends Thread{
 
 	static int locationCount = 101;
 	/*
@@ -18,7 +18,7 @@ public class Main {
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
 	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
 	static int maxGeneration = 500000; //총 몇 세대를 출력을 할 것인가?
-	static int generationPrint = 500; //몇 세대마다 출력을 할 것인가?
+	static int generationPrint = 10000; //몇 세대마다 출력을 할 것인가?
 	static int generationCut = 50000; //몇 세대가 반복 시 종료할 것인가?
 	
 	static double location[][] = new double[locationCount][2];
@@ -45,21 +45,21 @@ public class Main {
 				location[i][1] = Double.parseDouble(tempArray[1]);
 			}
 			temp = br.readLine();
-			maxTimer = Double.parseDouble(temp);
+			setMaxTimer(Double.parseDouble(temp));
+			System.out.println(getMaxTimer());
 		}catch (IOException e) {
 			e.getStackTrace();
 		}
-		System.out.println("LocationCount : " + locationCount);
-		System.out.println("Location Point : ");
-		for(int i = 0; i < location.length; i++) {
-			for(int j = 0; j < 2; j++) {
-				System.out.print(location[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println("maxTimer : " + maxTimer);
 	}
 	
+	public static double getMaxTimer() {
+		return maxTimer;
+	}
+
+	public static void setMaxTimer(double maxTimer) {
+		Source.maxTimer = maxTimer;
+	}
+
 	//gene 초기화
 	static void geneSet() {
 		for(int i = 0; i < locationCount; i++) {
@@ -214,43 +214,50 @@ public class Main {
 			System.out.println("Total Length : " + c[i].geneSum);
 		}
 	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		locationInput();
-		geneSet();
-		chromoSet();
-		generation = 0;
-		int index = 0;
-			//while(generation <= maxGeneration) {
-		while(true) {
-			sorting(ch);
-			for(int i = 0; i < populationLength; i++) {
-				chMix[i] = ch[i];
+	public void run() {
+		try {
+			while(true) {
+				locationInput();
+				geneSet();
+				chromoSet();
+				generation = 0;
+				int index = 0;
+				while(true) {
+					sorting(ch);
+					for(int i = 0; i < populationLength; i++) {
+						chMix[i] = ch[i];
+					}
+					for(int i = 50; i < chMix.length; i++) {
+						select();
+						chMix[i] = mutate(crossOver(parentA, parentB));
+					}
+					sorting(chMix);
+					replace();
+					if(generation % generationPrint == 0) {
+						System.out.println(generation + "generation : " + ch[0].geneSum);
+					}
+					generation++;
+					Thread.sleep(0);
+				}
 			}
-			for(int i = 50; i < chMix.length; i++) {
-				select();
-				chMix[i] = mutate(crossOver(parentA, parentB));
-			}
-			sorting(chMix);
-			replace();
-			if(ch[0] == chHistory[index]) {
-				index++;
-				chHistory[index] = ch[0];
-			} else {
-				index = 0;
-				chHistory[index] = ch[0];
-			}
-			if(generation % generationPrint == 0) {
-				System.out.println(generation + "generation : " + ch[0].geneSum);
-			}
-			if(index == generationCut-1) {
-				break;
-			}
-			generation++;
-		}
+		}catch (InterruptedException e) {}
 		System.out.println("\nSatisfied Solution\n" + Arrays.toString(ch[0].geneSource) + '\n' + ch[0].geneSum);
 	}
 
+}
+public class Main extends Source{
+	
+	public static void main(String [] args) {
+		// TODO Auto-generated method stub 
+		Source thread = new Source();
+		thread.start();
+		int timer = 217;
+		try {
+			Thread.sleep(1000 * timer);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		thread.interrupt();
+	}
 }
