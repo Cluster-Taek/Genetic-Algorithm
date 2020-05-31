@@ -3,7 +3,10 @@ package GA_ver2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 class Source extends Thread{
 
@@ -17,7 +20,6 @@ class Source extends Thread{
 	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
 	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
-	static int maxGeneration = 500000; //총 몇 세대를 출력을 할 것인가?
 	static int generationPrint = 10000; //몇 세대마다 출력을 할 것인가?
 	static int generationCut = 50000; //몇 세대가 반복 시 종료할 것인가?
 	
@@ -45,19 +47,10 @@ class Source extends Thread{
 				location[i][1] = Double.parseDouble(tempArray[1]);
 			}
 			temp = br.readLine();
-			setMaxTimer(Double.parseDouble(temp));
-			System.out.println(getMaxTimer());
+			maxTimer = Double.parseDouble(temp);
 		}catch (IOException e) {
 			e.getStackTrace();
 		}
-	}
-	
-	public static double getMaxTimer() {
-		return maxTimer;
-	}
-
-	public static void setMaxTimer(double maxTimer) {
-		Source.maxTimer = maxTimer;
 	}
 
 	//gene 초기화
@@ -70,46 +63,43 @@ class Source extends Thread{
 			}
 		}
 	}
-	
+	//temp에 랜덤 chromosome 저장
+	static int[] randomSet() {
+		int temp[] = new int[locationCount];
+		List<Integer> tempList = new ArrayList<Integer>();
+		for(int i = 0; i < locationCount; i++) {
+			tempList.add(i);
+		}
+		Collections.shuffle(tempList);
+		for(int i = 0; i < locationCount; i++) {
+			temp[i] = tempList.get(i);
+		}
+		return temp;
+	}
+	//temp의 geneSum 저장
+	static double sumSet(int[] temp) {
+		double sumTemp = 0;
+		for(int j = 0; j <locationCount; j++) {
+			if(j == locationCount-1) {
+				sumTemp += gene[temp[j]][temp[0]];
+			}else {
+				sumTemp += gene[temp[j]][temp[j+1]];
+			}
+		}
+		return sumTemp;
+	}
 	//chromosome 초기화
 	static void chromoSet() {
-		
 		for(int index = 0; index <populationLength; index++) {
-			//temp에 랜덤 chromosome 저장
-			int[] temp = new int[locationCount];
-			double sumTemp = 0;
-			for(int i = 0; i < locationCount; i++) {
-				temp[i] = (int)(Math.random()*locationCount);
-				for(int j = 0; j < i; j++) {
-					if(temp[i] == temp[j]) {
-						i--;
-						break;
-					}
-				}
-			}
-			//temp의 geneSum 저장
-			for(int j = 0; j <locationCount; j++) {
-				if(j == locationCount-1) {
-					sumTemp += gene[temp[j]][temp[0]];
-				}else {
-					sumTemp += gene[temp[j]][temp[j+1]];
-				}
-			}
-			ch[index] = new Chromosome(sumTemp, temp);
+			randomSet();
+			sumSet(randomSet());
+			ch[index] = new Chromosome(sumSet(randomSet()), randomSet());
 		}
 	}
 	
 	//Chromosome배열을 geneSum에 따라 오름차순 정렬
 	static void sorting(Chromosome[] c) {
-		for(int i = 0 ; i < c.length; i ++) {
-			for(int j = 0 ; j < c.length-i-1; j ++) {
-				if(c[j].geneSum > c[j+1].geneSum) {
-					Chromosome temp = c[j];
-					c[j] = c[j+1];
-					c[j+1] = temp;
-				}
-			}
-		}
+		Arrays.sort(c);
 	}
 	
 	static void select() {
@@ -221,7 +211,6 @@ class Source extends Thread{
 				geneSet();
 				chromoSet();
 				generation = 0;
-				int index = 0;
 				while(true) {
 					sorting(ch);
 					for(int i = 0; i < populationLength; i++) {
