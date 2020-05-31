@@ -16,9 +16,9 @@ public class Main {
 	static int generation;
 	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
-	static double mutateProbability = 0.16; //돌연변이의 확률은 얼마인가?
+	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
 	static int maxGeneration = 500000; //총 몇 세대를 출력을 할 것인가?
-	static int generationPrint = 1; //몇 세대마다 출력을 할 것인가?
+	static int generationPrint = 500; //몇 세대마다 출력을 할 것인가?
 	static int generationCut = 50000; //몇 세대가 반복 시 종료할 것인가?
 	
 	static double location[][] = new double[locationCount][2];
@@ -224,7 +224,7 @@ public class Main {
 		generation = 0;
 		int index = 0;
 			//while(generation <= maxGeneration) {
-		while(!Thread.currentThread().isInterrupted()) {
+		while(true) {
 			sorting(ch);
 			for(int i = 0; i < populationLength; i++) {
 				chMix[i] = ch[i];
