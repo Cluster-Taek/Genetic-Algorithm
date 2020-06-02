@@ -10,7 +10,7 @@ import java.util.List;
 
 class Source extends Thread{
 
-	static int locationCount = 101;
+	static int locationCount = 200;
 	/*
 	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
 	 case 2 : 실행속도 증가를 위해 array를 사용하고 locationCount만 수동으로 초기화
@@ -19,8 +19,8 @@ class Source extends Thread{
 	static int generation;
 	static int populationLength = 50; //유전자의 양은 얼마나 많이 보유할 것인가?
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
-	static double mutateProbability = 0.15; //돌연변이의 확률은 얼마인가?
-	static int generationPrint = 10000; //몇 세대마다 출력을 할 것인가?
+	static double mutateProbability = 0.2; //돌연변이의 확률은 얼마인가?
+	static int generationPrint = 1000; //몇 세대마다 출력을 할 것인가?
 	static int generationCut = 50000; //몇 세대가 반복 시 종료할 것인가?
 	
 	static double location[][] = new double[locationCount][2];
@@ -31,11 +31,25 @@ class Source extends Thread{
 	
 	static Chromosome parentA;
 	static Chromosome parentB;
+	/*
+	 * mimitic Algorithm 구현
+	 * two-opt 알고리즘 사용
+	 * 경로를 다 풀어주고 시작
+	 * 
+	 * Hill Climbing Method
+	 * local에 빠졌다고 확인이 되었을때
+	 * 원래 Population을 4분위를 해서 4값만 들고 나머지는 다시 새로 initialization
+	 * 
+	 * 수렴 : Exploriting 익스플로러레이션
+	 * */
+	
+	
+	
 	
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/cycle101.in";
+			String filePath = "cycles/opt_cycle200.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -52,7 +66,6 @@ class Source extends Thread{
 			e.getStackTrace();
 		}
 	}
-
 	//gene 초기화
 	static void geneSet() {
 		for(int i = 0; i < locationCount; i++) {
@@ -96,12 +109,11 @@ class Source extends Thread{
 			ch[index] = new Chromosome(sumSet(randomSet()), randomSet());
 		}
 	}
-	
 	//Chromosome배열을 geneSum에 따라 오름차순 정렬
 	static void sorting(Chromosome[] c) {
 		Arrays.sort(c);
 	}
-	
+	//Chromosome배열에서 부모 Chromosome 설정
 	static void select() {
 		if(Math.random() < selectionPressure) {
 			parentA = ch[(int)(Math.random()*populationLength/2)];
@@ -114,7 +126,6 @@ class Source extends Thread{
 			parentB = ch[(int)(Math.random()*populationLength/2) + (populationLength/2)];
 		}
 	}
-	
 	//부모 Chromosome 두 개를 랜덤으로 받아 crossOver
 	static Chromosome crossOver(Chromosome a, Chromosome b) {
 		Chromosome c;
@@ -154,7 +165,6 @@ class Source extends Thread{
 		return c;
 		
 	}
-	
 	//c를 받아 mutateProbability에 따라 원래 값 혹은 돌연변이 값으로 반환
 	static Chromosome mutate(Chromosome c) {
 		Chromosome x;
@@ -187,13 +197,13 @@ class Source extends Thread{
 			return c;
 		}
 	}
-	
+	//chMix에서 ch로 상위 Chromosome만 선택
 	static void replace() {
 		for(int i = 0; i < populationLength; i++) {
 			ch[i] = chMix[i];
 		}
 	}
-	
+	//Print
 	static void print(Chromosome[] c) {
 		for(int i = 0; i < c.length; i++) {
 			System.out.print("geneSource : ");
@@ -204,6 +214,7 @@ class Source extends Thread{
 			System.out.println("Total Length : " + c[i].geneSum);
 		}
 	}
+	//전체 구동부
 	public void run() {
 		try {
 			while(true) {
@@ -232,7 +243,6 @@ class Source extends Thread{
 		}catch (InterruptedException e) {}
 		System.out.println("\nSatisfied Solution\n" + Arrays.toString(ch[0].geneSource) + '\n' + ch[0].geneSum);
 	}
-
 }
 public class Main extends Source{
 	
@@ -240,7 +250,7 @@ public class Main extends Source{
 		// TODO Auto-generated method stub 
 		Source thread = new Source();
 		thread.start();
-		int timer = 217;
+		int timer = 12*60;
 		try {
 			Thread.sleep(1000 * timer);
 		} catch (InterruptedException e) {
