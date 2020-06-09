@@ -27,6 +27,7 @@ class Source extends Thread{
 	static double gene[][] = new double[locationCount][locationCount];
 	static Chromosome ch[] = new Chromosome[populationLength];
 	static Chromosome chMix[] = new Chromosome[populationLength*3/2];
+	static Chromosome chNew[] = new Chromosome[populationLength];
 	static Chromosome chHistory[] = new Chromosome[generationCut];
 	
 	static Chromosome parentA;
@@ -206,6 +207,17 @@ class Source extends Thread{
 	static void replace() {
 		for(int i = 0; i < populationLength; i++) {
 			ch[i] = chMix[i];
+		}
+	}
+	//hill climbing 구현
+	static void climbing() {
+		for(int index = 0; index < populationLength; index++) {
+			randomSet();
+			chNew[index] = new Chromosome(sumSet(randomSet()), randomSet());
+			chNew[index] = twoopt(chNew[index]);
+		}
+		for(int index = 0; index < populationLength; index+=(populationLength/4)) {
+			chNew[index] = ch[index];
 		}
 	}
 	//Print
