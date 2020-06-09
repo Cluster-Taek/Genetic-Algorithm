@@ -21,7 +21,7 @@ class Source extends Thread{
 	static double selectionPressure = 0.7; //상위 유전자를 얼마나 들고 올 것인가?
 	static double mutateProbability = 0.2; //돌연변이의 확률은 얼마인가?
 	static int generationPrint = 1000; //몇 세대마다 출력을 할 것인가?
-	static int generationCut = 50000; //몇 세대가 반복 시 종료할 것인가?
+	static int generationCut = 500; //몇 세대가 반복 시 Hill Climbing을 사용할 것인가?
 	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
@@ -106,8 +106,8 @@ class Source extends Thread{
 	//chromosome 초기화
 	static void chromoSet() {
 		for(int index = 0; index <populationLength; index++) {
-			randomSet();
-			ch[index] = new Chromosome(sumSet(randomSet()), randomSet());
+			int temp[] = randomSet();
+			ch[index] = new Chromosome(sumSet(temp), temp);
 			ch[index] = twoopt(ch[index]);
 		}
 	}
@@ -212,13 +212,14 @@ class Source extends Thread{
 	//hill climbing 구현
 	static void climbing() {
 		for(int index = 0; index < populationLength; index++) {
-			randomSet();
-			chNew[index] = new Chromosome(sumSet(randomSet()), randomSet());
-			chNew[index] = twoopt(chNew[index]);
+			int temp[] = randomSet();
+			chNew[index] = new Chromosome(sumSet(temp), temp);
 		}
-		for(int index = 0; index < populationLength; index+=(populationLength/4)) {
-			chNew[index] = ch[index];
-		}
+		chNew[0] = ch[0];
+		chNew[populationLength/2] = ch[populationLength/2];
+		chNew[populationLength-1] = ch[populationLength-1];
+		ch = chNew;
+		sorting(ch);
 	}
 	//Print
 	static void print(Chromosome[] c) {
@@ -234,6 +235,7 @@ class Source extends Thread{
 	//전체 구동부
 	public void run() {
 		try {
+			int index = 0;
 			while(true) {
 				locationInput();
 				geneSet();
@@ -252,6 +254,18 @@ class Source extends Thread{
 					replace();
 					if(generation % generationPrint == 0) {
 						System.out.println(generation + "generation : " + ch[0].geneSum);
+					}
+					if(ch[0] == chHistory[index]) {
+						index++;
+						chHistory[index] = ch[0];
+					} else {
+						index = 0;
+						chHistory[index] = ch[0];
+					}
+					if(index == generationCut-1) {
+						System.out.println("Hill Climbing....");
+						climbing();
+						index = 0;
 					}
 					generation++;
 					Thread.sleep(0);

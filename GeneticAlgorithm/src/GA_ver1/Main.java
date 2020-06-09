@@ -14,6 +14,7 @@ public class Main {
 	static double mutateProbability = 0.15;
 	static int maxGeneration = 500;
 	
+	
 	static double location[][] = new double[locationCount][2];
 	static double gene[][] = new double[locationCount][locationCount];
 	static Chromosome ch[] = new Chromosome[populationLength];
