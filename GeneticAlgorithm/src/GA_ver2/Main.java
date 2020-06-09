@@ -10,7 +10,7 @@ import java.util.List;
 
 class Source extends Thread{
 
-	static int locationCount = 200;
+	static int locationCount = 101;
 	/*
 	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
 	 case 2 : 실행속도 증가를 위해 array를 사용하고 locationCount만 수동으로 초기화
@@ -49,7 +49,7 @@ class Source extends Thread{
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/opt_cycle200.in";
+			String filePath = "cycles/cycle101.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -101,13 +101,35 @@ class Source extends Thread{
 		}
 		return sumTemp;
 	}
+	
 	//chromosome 초기화
 	static void chromoSet() {
 		for(int index = 0; index <populationLength; index++) {
 			randomSet();
-			sumSet(randomSet());
 			ch[index] = new Chromosome(sumSet(randomSet()), randomSet());
+			ch[index] = twoopt(ch[index]);
 		}
+	}
+	//two-opt 알고리즘 구현
+	static Chromosome twoopt(Chromosome c) {
+		Chromosome x = c;
+		double minSum = c.geneSum;
+		for(int sp = 0; sp < locationCount; sp++) {
+			for(int ep = sp; ep < locationCount; ep++) {
+				int[] temp = c.geneSource;
+				int sum = (ep+sp);
+				for(int i = sp; i <= sum/2; i++) {
+					int tmp = temp[i];
+					temp[i] = temp[sum-i];
+					temp[sum-i] = tmp;
+				}
+				if(sumSet(temp) < minSum) {
+					x = new Chromosome(sumSet(temp), temp);
+					minSum = sumSet(temp);
+				}
+			}
+		}
+		return x;
 	}
 	//Chromosome배열을 geneSum에 따라 오름차순 정렬
 	static void sorting(Chromosome[] c) {
@@ -133,7 +155,6 @@ class Source extends Thread{
 		for(int i = 0; i < locationCount; i++) {
 			temp[i] = -1;
 		}
-		double sumTemp = 0;
 		int cutPoint = (int)(Math.random()*locationCount);
 		for(int i = 0; i < cutPoint; i++) {
 			temp[i] = a.geneSource[i];
@@ -153,24 +174,15 @@ class Source extends Thread{
 				cutPoint++;
 			}
 		}
-	
-		for(int i = 0; i < locationCount; i++) {
-			if(i == locationCount-1) {
-				sumTemp += gene[temp[i]][temp[0]];
-			}else {
-				sumTemp += gene[temp[i]][temp[i+1]];
-			}
-		}
-		c = new Chromosome(sumTemp, temp);
+		c = new Chromosome(sumSet(temp), temp);
 		return c;
 		
 	}
 	//c를 받아 mutateProbability에 따라 원래 값 혹은 돌연변이 값으로 반환
 	static Chromosome mutate(Chromosome c) {
-		Chromosome x;
 		if(Math.random() < mutateProbability) {
+			Chromosome x;
 			int[] temp = c.geneSource;
-			double sumTemp = 0;
 			int sp = (int)(Math.random()*locationCount);
 			int ep = (int)(Math.random()*locationCount);
 			int sum = (ep+sp);
@@ -184,14 +196,7 @@ class Source extends Thread{
 				temp[i] = temp[sum-i];
 				temp[sum-i] = tmp;
 			}
-			for(int i = 0; i <locationCount; i++) {
-				if(i == locationCount-1) {
-					sumTemp += gene[temp[i]][temp[0]];
-				}else {
-					sumTemp += gene[temp[i]][temp[i+1]];
-				}
-			}
-			x = new Chromosome(sumTemp, temp);
+			x = new Chromosome(sumSet(temp), temp);
 			return x;
 		}else {
 			return c;
