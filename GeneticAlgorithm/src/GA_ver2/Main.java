@@ -10,7 +10,7 @@ import java.util.List;
 
 class Source extends Thread{
 
-	static int locationCount = 101;
+	static int locationCount = 200;
 	/*
 	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
 	 case 2 : 실행속도 증가를 위해 array를 사용하고 locationCount만 수동으로 초기화
@@ -50,7 +50,7 @@ class Source extends Thread{
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/cycle101.in";
+			String filePath = "cycles/opt_cycle200.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -139,14 +139,14 @@ class Source extends Thread{
 	//Chromosome배열에서 부모 Chromosome 설정
 	static void select() {
 		if(Math.random() < selectionPressure) {
-			parentA = ch[(int)(Math.random()*populationLength/2)];
+			parentA = chMix[(int)(Math.random()*populationLength/2)];
 		}else {
-			parentA = ch[(int)(Math.random()*populationLength/2) + (populationLength/2)];
+			parentA = chMix[(int)(Math.random()*populationLength/2) + (populationLength/2)];
 		}
 		if(Math.random() < selectionPressure) {
-			parentB = ch[(int)(Math.random()*populationLength/2)];
+			parentB = chMix[(int)(Math.random()*populationLength/2)];
 		}else {
-			parentB = ch[(int)(Math.random()*populationLength/2) + (populationLength/2)];
+			parentB = chMix[(int)(Math.random()*populationLength/2) + (populationLength/2)];
 		}
 	}
 	//부모 Chromosome 두 개를 랜덤으로 받아 crossOver
@@ -245,7 +245,9 @@ class Source extends Thread{
 					sorting(ch);
 					for(int i = 0; i < populationLength; i++) {
 						chMix[i] = ch[i];
+						
 					}
+					
 					for(int i = 50; i < chMix.length; i++) {
 						select();
 						chMix[i] = mutate(crossOver(parentA, parentB));
@@ -263,8 +265,8 @@ class Source extends Thread{
 						chHistory[index] = ch[0];
 					}
 					if(index == generationCut-1) {
-						System.out.println("Hill Climbing....");
 						climbing();
+						System.out.println("Hill Climbing....");
 						index = 0;
 					}
 					generation++;
@@ -281,7 +283,7 @@ public class Main extends Source{
 		// TODO Auto-generated method stub 
 		Source thread = new Source();
 		thread.start();
-		int timer = 12*60;
+		int timer = 100000000;
 		try {
 			Thread.sleep(1000 * timer);
 		} catch (InterruptedException e) {
