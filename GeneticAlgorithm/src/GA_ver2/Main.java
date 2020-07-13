@@ -218,7 +218,9 @@ class Source extends Thread{
 		chNew[0] = ch[0];
 		chNew[populationLength/2] = ch[populationLength/2];
 		chNew[populationLength-1] = ch[populationLength-1];
-		ch = chNew;
+		for(int i = 0; i < populationLength; i++) {
+			ch[i] = chMix[i];
+		}
 		sorting(ch);
 	}
 	//Print
