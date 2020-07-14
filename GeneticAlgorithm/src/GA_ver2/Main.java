@@ -10,7 +10,7 @@ import java.util.List;
 
 class Source extends Thread{
 
-	static int locationCount = 200;
+	static int locationCount = 101;
 	/*
 	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
 	 case 2 : 실행속도 증가를 위해 array를 사용하고 locationCount만 수동으로 초기화
@@ -32,17 +32,9 @@ class Source extends Thread{
 	
 	static Chromosome parentA;
 	static Chromosome parentB;
-	/*
-	 * mimitic Algorithm 구현
-	 * two-opt 알고리즘 사용
-	 * 경로를 다 풀어주고 시작
-	 * 
-	 * Hill Climbing Method
-	 * local에 빠졌다고 확인이 되었을때
-	 * 원래 Population을 4분위를 해서 4값만 들고 나머지는 다시 새로 initialization
-	 * 
-	 * 수렴 : Exploriting 익스플로러레이션
-	 * */
+	
+	static double result = 0;
+	
 	
 	
 	
@@ -50,7 +42,7 @@ class Source extends Thread{
 	//cycle에서 location 가져오기
 	static void locationInput() {
 		try {
-			String filePath = "cycles/opt_cycle200.in";
+			String filePath = "cycles/cycle101.in";
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			String temp = br.readLine();
 			locationCount = Integer.parseInt(temp);
@@ -108,16 +100,17 @@ class Source extends Thread{
 		for(int index = 0; index <populationLength; index++) {
 			int temp[] = randomSet();
 			ch[index] = new Chromosome(sumSet(temp), temp);
-			ch[index] = twoopt(ch[index]);
+			Chromosome tCh = new Chromosome(twoopt(ch[index]).geneSum,twoopt(ch[index]).geneSource);
+			ch[index] = new Chromosome(tCh.geneSum, tCh.geneSource);
 		}
 	}
 	//two-opt 알고리즘 구현
 	static Chromosome twoopt(Chromosome c) {
-		Chromosome x = c;
-		double minSum = c.geneSum;
+		Chromosome x = new Chromosome(c.geneSum, c.geneSource);
+		double minSum = x.geneSum;
 		for(int sp = 0; sp < locationCount; sp++) {
 			for(int ep = sp; ep < locationCount; ep++) {
-				int[] temp = c.geneSource;
+				int[] temp = x.geneSource;
 				int sum = (ep+sp);
 				for(int i = sp; i <= sum/2; i++) {
 					int tmp = temp[i];
@@ -126,7 +119,7 @@ class Source extends Thread{
 				}
 				if(sumSet(temp) < minSum) {
 					x = new Chromosome(sumSet(temp), temp);
-					minSum = sumSet(temp);
+					minSum = x.geneSum;
 				}
 			}
 		}
@@ -257,7 +250,7 @@ class Source extends Thread{
 					sorting(chMix);
 					replace();
 					if(generation % generationPrint == 0) {
-						System.out.println(generation + "generation : " + ch[0].geneSum);
+						//System.out.println(generation + "generation : " + ch[0].geneSum);
 					}
 					if(ch[0] == chHistory[index]) {
 						index++;
@@ -267,8 +260,8 @@ class Source extends Thread{
 						chHistory[index] = ch[0];
 					}
 					if(index == generationCut-1) {
-						climbing();
-						System.out.println("Hill Climbing....");
+						//climbing();
+						//System.out.println("Hill Climbing....");
 						index = 0;
 					}
 					generation++;
@@ -276,22 +269,33 @@ class Source extends Thread{
 				}
 			}
 		}catch (InterruptedException e) {}
-		System.out.println("\nSatisfied Solution\n" + Arrays.toString(ch[0].geneSource) + '\n' + ch[0].geneSum);
+		//System.out.println("\nSatisfied Solution\n" + Arrays.toString(ch[0].geneSource) + '\n' + ch[0].geneSum + '\n');
+		result += ch[0].geneSum;
+		System.out.println(ch[0].geneSum + '\n');
+	}
+	static void testing1() {
+		int testCount = 7;
+		for(int i = 0; i < testCount; i++) {
+			Source thread = new Source();
+			
+			thread.start();
+			int timer = 1;
+			try {
+				Thread.sleep(1000 * timer);
+				
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			thread.interrupt();
+			System.out.print("Case " + (i+1) + " : ");
+		}
+		System.out.println("\nAverage : " + (result + (testCount * 10)) / testCount);
 	}
 }
 public class Main extends Source{
 	
 	public static void main(String [] args) {
-		// TODO Auto-generated method stub 
-		Source thread = new Source();
-		thread.start();
-		int timer = 100000000;
-		try {
-			Thread.sleep(1000 * timer);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		thread.interrupt();
+		// TODO Auto-generated method stub
+		testing1();
 	}
 }
