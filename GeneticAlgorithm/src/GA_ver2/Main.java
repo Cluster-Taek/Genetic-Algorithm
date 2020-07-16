@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 class Source extends Thread{
-
+	
 	static int locationCount = 101;
 	/*
 	 case 1 : 실행속도 감소를 감안하고 ArrayList로 변형
@@ -33,7 +33,8 @@ class Source extends Thread{
 	static Chromosome parentA;
 	static Chromosome parentB;
 	
-	static double result = 0;
+	static double resultSum = 0;
+	static double firstSum = 0;
 	
 	
 	
@@ -235,6 +236,8 @@ class Source extends Thread{
 				locationInput();
 				geneSet();
 				chromoSet();
+				System.out.println("First Chromosome : " + ch[0].geneSum);
+				firstSum += ch[0].geneSum;
 				generation = 0;
 				while(true) {
 					sorting(ch);
@@ -270,16 +273,16 @@ class Source extends Thread{
 			}
 		}catch (InterruptedException e) {}
 		//System.out.println("\nSatisfied Solution\n" + Arrays.toString(ch[0].geneSource) + '\n' + ch[0].geneSum + '\n');
-		result += ch[0].geneSum;
+		resultSum += ch[0].geneSum;
 		System.out.println(ch[0].geneSum + '\n');
 	}
 	static void testing1() {
-		int testCount = 7;
+		int testCount = 20;
 		for(int i = 0; i < testCount; i++) {
 			Source thread = new Source();
 			
 			thread.start();
-			int timer = 1;
+			int timer = 216;
 			try {
 				Thread.sleep(1000 * timer);
 				
@@ -289,7 +292,8 @@ class Source extends Thread{
 			thread.interrupt();
 			System.out.print("Case " + (i+1) + " : ");
 		}
-		System.out.println("\nAverage : " + (result + (testCount * 10)) / testCount);
+		System.out.println("\nFirstAverage : " + (firstSum + (testCount * 10)) / testCount);
+		System.out.println("\nResultAverage : " + (resultSum + (testCount * 10)) / testCount);
 	}
 }
 public class Main extends Source{
